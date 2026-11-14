@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block content %}
+<div class="center card reveal" style="max-width:600px"><h2>Post a new project</h2><p class="muted">Clear details attract better bids.</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>Project title</label><input name="title" required>
+<label>Description</label><textarea name="description" required></textarea>
+<label>Budget (₹)</label><input name="budget" type="number" min="1" required>
+<label>Deadline</label><input name="deadline" type="date" required>
+<button class="btn">Publish project</button></form></div>{% endblock %}

@@ -1,0 +1,27 @@
+{% set pending = bids|selectattr('status','equalto','Pending')|list %}
+{% set low = (pending|map(attribute='amount')|min) if pending else none %}
+<h3>Received bids ({{ bids|length }})</h3>
+{% for b in bids %}
+<div class="bid-card {{ b.status }}" data-id="{{ b.bid_id }}">
+  <div class="bid-head">
+    <span class="avatar" style="--h:{{ b.freelancer_name|hue }}">{{ b.freelancer_name|initials }}</span>
+    <div class="who"><a href="{{ url_for('profile', uid=b.freelancer_id) }}">{{ b.freelancer_name }}</a><span class="muted">⏱ {{ b.delivery_days }} days delivery</span></div>
+    <div class="amt">{{ b.amount|inr }}{% if b.status == 'Pending' and pending|length > 1 and b.amount == low %}<span class="best">LOWEST</span>{% endif %}</div>
+  </div>
+  <p class="proposal">{{ b.proposal }}</p>
+  <div class="bid-foot">
+    <span class="badge {{ b.status }}">{{ b.status }}</span>
+    {% if b.status == 'Rejected' and b.rejection_reason %}<span class="muted">“{{ b.rejection_reason }}”</span>{% endif %}
+    {% if is_owner and p.status == 'Open' and b.status == 'Pending' %}
+    <div class="actions">
+      <form method="post" action="{{ url_for('reject', bid_id=b.bid_id) }}" class="inline confirm-form"
+            data-title="Reject {{ b.freelancer_name }}'s bid?" data-text="They will be notified. This can't be undone." data-reason="1" data-danger="1" data-ok="Reject bid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn danger sm">✕ Reject</button></form>
+      <form method="post" action="{{ url_for('hire', bid_id=b.bid_id) }}" class="inline confirm-form"
+            data-title="Hire {{ b.freelancer_name }}?" data-text="All other pending bids will be rejected automatically." data-ok="Yes, hire">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn sm">✓ Hire</button></form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% else %}<div class="empty"><span class="big">⏳</span>No bids yet. New bids will pop up here automatically.</div>{% endfor %}

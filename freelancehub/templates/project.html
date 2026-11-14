@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% block content %}
+{% set order = ['Open','Hired','Completed'] %}{% set idx = order.index(p.status) %}
+<div class="card reveal"><div class="row" style="margin-bottom:0"><h2>{{ p.title }}</h2><span class="badge {{ p.status }}">{{ p.status }}</span></div>
+<p>{{ p.description }}</p>
+<div class="meta">
+  <div><small>Budget</small><b>{{ p.budget|inr }}</b></div>
+  <div><small>Deadline</small><b>{{ p.deadline }}</b></div>
+  <div><small>Client</small><b>{{ p.client_name }}</b></div>
+  <div><small>Total bids</small><b>{{ total }}</b></div>
+</div>
+<div class="stepper">{% for st in order %}
+  <div class="step {{ 'done' if (loop.index0 < idx or p.status == 'Completed') else ('active' if loop.index0 == idx else '') }}"><span class="dot">{{ '✓' if (loop.index0 < idx or p.status == 'Completed') else loop.index }}</span>{{ st }}</div>{% endfor %}
+</div>
+{% if expired and p.status == 'Open' %}<p class="muted">⏰ Deadline passed: bidding is closed.</p>{% endif %}
+{% if hire %}<p class="success">🤝 Hired on {{ hire.hired_date }} · contract {{ hire.status }}</p>{% endif %}
+{% if is_owner and p.status == 'Hired' %}
+<form method="post" action="{{ url_for('complete', pid=p.project_id) }}" class="confirm-form" data-title="Mark project completed?" data-text="This closes the contract and notifies the freelancer." data-ok="Mark completed">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn secondary">🏁 Mark Completed</button></form>
+{% endif %}</div>
+
+{% if session.get('role') == 'Freelancer' and p.status == 'Open' and not expired and not my_bid %}
+<div class="card reveal"><h3>Submit your bid</h3>
+<form method="post" action="{{ url_for('bid', pid=p.project_id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="grid"><div><label>Your price (₹)</label><input name="amount" type="number" min="1" required></div>
+<div><label>Delivery (days)</label><input name="delivery_days" type="number" min="1" required></div></div>
+<label>Proposal</label><textarea name="proposal" placeholder="Why are you the right person for this?" required></textarea>
+<button class="btn">Submit bid</button></form></div>
+{% endif %}
+
+{% if is_owner %}
+<div class="card live" id="bids-live" data-url="{{ url_for('api_project_bids', pid=p.project_id) }}">
+  <span class="livedot" title="Updating live"></span>{% include "_bids.html" %}</div>
+{% elif session.get('role') == 'Freelancer' %}
+<div class="card reveal"><h3>Your bid</h3>
+{% if my_bid %}{% set b = my_bid %}
+<div class="bid-card {{ b.status }}" style="margin:0"><div class="bid-head"><div class="who"><b>{{ b.delivery_days }} days delivery</b></div><div class="amt">{{ b.amount|inr }}</div></div>
+<p class="proposal">{{ b.proposal }}</p><span class="badge {{ b.status }}">{{ b.status }}</span>
+{% if b.status == 'Rejected' and b.rejection_reason %} <span class="muted">Client's note: “{{ b.rejection_reason }}”</span>{% endif %}</div>
+{% else %}<p class="muted">You haven't bid yet.</p>{% endif %}
+<p class="muted" style="margin-top:12px">{{ total }} bid(s) placed in total. Other freelancers' bids are private.</p></div>
+{% else %}
+<div class="card muted">{{ total }} bid(s) placed. <a href="{{ url_for('login') }}">Log in</a> to participate.</div>
+{% endif %}{% endblock %}

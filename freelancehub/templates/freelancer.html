@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% block content %}
+<div class="row"><div><h2>Find your next project 🚀</h2><span class="muted">Bid early. Clients see new bids instantly.</span></div>
+<span><a class="btn ghost" href="{{ url_for('profile', uid=session.uid) }}">My Profile</a> <a class="btn" href="{{ url_for('edit_profile') }}">Edit Profile</a></span></div>
+<div class="stats">
+  <div class="card stat reveal"><div class="icon">🗂</div><div><b data-count="{{ projects|length }}">0</b><span class="muted">Open projects</span></div></div>
+  <div class="card stat reveal"><div class="icon">📨</div><div><b data-count="{{ mybids|length }}">0</b><span class="muted">My bids</span></div></div>
+  <div class="card stat reveal"><div class="icon">⏳</div><div><b data-count="{{ mybids|selectattr('status','equalto','Pending')|list|length }}">0</b><span class="muted">Pending</span></div></div>
+  <div class="card stat reveal"><div class="icon">🏆</div><div><b data-count="{{ mybids|selectattr('status','equalto','Accepted')|list|length }}">0</b><span class="muted">Won</span></div></div>
+</div>
+<h3 class="section">Available projects</h3>
+<div class="grid">
+{% for p in projects %}
+<div class="card lift pcard reveal">
+  <h3>{{ p.title }}</h3><p class="muted">{{ p.description[:110] }}{% if p.description|length > 110 %}…{% endif %}</p>
+  <div class="price">{{ p.budget|inr }}</div>
+  {% set dl = p.deadline|days_left %}
+  <div class="chips"><span class="chip {{ 'warn' if dl is not none and dl <= 7 else '' }}">📅 {{ dl }} days left</span><span class="chip">👥 {{ p.bid_count }} bid{{ '' if p.bid_count == 1 else 's' }}</span><span class="chip">by {{ p.client_name }}</span></div>
+  <a class="btn" href="{{ url_for('project', pid=p.project_id) }}">View &amp; Bid →</a>
+</div>
+{% else %}<div class="card empty"><span class="big">🔍</span>No open projects right now.</div>{% endfor %}
+</div>
+<h3 class="section">My bids</h3>
+<div class="card reveal"><table>
+<tr><th>Project</th><th>Amount</th><th>Days</th><th>Status</th></tr>
+{% for b in mybids %}
+<tr><td><a href="{{ url_for('project', pid=b.project_id) }}">{{ b.title }}</a></td><td>{{ b.amount|inr }}</td><td>{{ b.delivery_days }}</td><td><span class="badge {{ b.status }}">{{ b.status }}</span></td></tr>
+{% else %}<tr><td colspan="4" class="muted">No bids yet.</td></tr>{% endfor %}
+</table></div>{% endblock %}

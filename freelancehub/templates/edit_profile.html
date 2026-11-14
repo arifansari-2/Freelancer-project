@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block content %}
+<div class="center card reveal"><h2>Edit profile</h2>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>Bio</label><textarea name="bio">{{ p.bio }}</textarea>
+<label>Skills (comma separated)</label><input name="skills" value="{{ skills }}">
+<label>Experience (years)</label><input name="experience" type="number" min="0" value="{{ p.experience }}">
+<label>Hourly rate (₹)</label><input name="hourly_rate" type="number" min="0" value="{{ p.hourly_rate }}">
+<button class="btn">Save changes</button></form></div>{% endblock %}

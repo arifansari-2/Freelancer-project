@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% block content %}
+<div class="row"><div><h2>Welcome back, {{ session.name.split()[0] }} 👋</h2><span class="muted">Here's what's happening with your projects.</span></div>
+<a class="btn" href="{{ url_for('new_project') }}">＋ Post Project</a></div>
+<div class="stats">
+  <div class="card stat reveal"><div class="icon">🗂</div><div><b data-count="{{ projects|length }}">0</b><span class="muted">Projects</span></div></div>
+  <div class="card stat reveal"><div class="icon">🟢</div><div><b data-count="{{ projects|selectattr('status','equalto','Open')|list|length }}">0</b><span class="muted">Open</span></div></div>
+  <div class="card stat reveal"><div class="icon">💰</div><div><b data-count="{{ projects|sum(attribute='bid_count') }}">0</b><span class="muted">Bids received</span></div></div>
+  <div class="card stat reveal"><div class="icon">🤝</div><div><b data-count="{{ projects|rejectattr('status','equalto','Open')|list|length }}">0</b><span class="muted">Hired / done</span></div></div>
+</div>
+<h3 class="section">Your projects</h3>
+<div class="grid">
+{% for p in projects %}
+<div class="card lift pcard {{ p.status }} reveal">
+  <div class="row" style="margin:0"><h3>{{ p.title }}</h3><span class="badge {{ p.status }}">{{ p.status }}</span></div>
+  <p class="muted">{{ p.description[:110] }}{% if p.description|length > 110 %}…{% endif %}</p>
+  <div class="price">{{ p.budget|inr }}</div>
+  {% set dl = p.deadline|days_left %}
+  <div class="chips"><span class="chip {{ 'bad' if dl is not none and dl < 0 else ('warn' if dl is not none and dl <= 7 else '') }}">📅 {{ p.deadline }}{% if dl is not none %} · {{ 'expired' if dl < 0 else ('due today' if dl == 0 else dl ~ ' days left') }}{% endif %}</span>
+  {% if p.lowest_bid %}<span class="chip">Lowest bid {{ p.lowest_bid|inr }}</span>{% endif %}</div>
+  <a class="btn secondary" href="{{ url_for('project', pid=p.project_id) }}">View {{ p.bid_count }} bid{{ '' if p.bid_count == 1 else 's' }} →</a>
+</div>
+{% else %}<div class="card empty"><span class="big">📭</span>No projects yet. Post your first one!</div>{% endfor %}
+</div>{% endblock %}

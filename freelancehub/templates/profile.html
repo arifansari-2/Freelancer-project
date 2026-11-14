@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block content %}
+<div class="center card reveal" style="text-align:center">
+<span class="avatar lg" style="--h:{{ u.name|hue }};margin:0 auto 12px">{{ u.name|initials }}</span>
+<h2>{{ u.name }}</h2><span class="badge {{ 'Accepted' if u.role == 'Freelancer' else 'Open' }}">{{ u.role }}</span>
+{% if p %}
+<p style="margin-top:16px">{{ p.bio or 'No bio yet.' }}</p>
+<div class="meta" style="text-align:left"><div><small>Experience</small><b>{{ p.experience }} yrs</b></div>
+<div><small>Hourly rate</small><b>{% if p.hourly_rate %}{{ p.hourly_rate|inr }}{% else %}Not set{% endif %}</b></div>
+<div><small>Completed</small><b>{{ done }}</b></div></div>
+<p><b>Skills</b></p>
+{% for s in skills %}<span class="tag">{{ s.name }}</span>{% else %}<span class="muted">No skills listed.</span>{% endfor %}
+{% if session.uid == u.user_id %}<p><a class="btn" href="{{ url_for('edit_profile') }}">Edit Profile</a></p>{% endif %}
+{% else %}<p class="muted">This is a client profile.</p>{% endif %}</div>{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block content %}
+<div class="center card reveal"><h2>Welcome back 👋</h2><p class="muted">Log in to continue.</p>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>Email</label><input name="email" type="email" required>
+<label>Password</label><input name="password" type="password" required>
+<button class="btn" style="width:100%;justify-content:center">Login</button></form>
+<hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+<p class="muted" style="font-size:.9rem"><b>Demo accounts</b> (password <code>1234</code>)<br>
+client@demo.com · freelancer@demo.com · asha@demo.com</p></div>{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block content %}
+<div class="hero"><span class="blob b1"></span><span class="blob b2"></span>
+  <h1>Hire talent. Win projects.<br>See it happen live.</h1>
+  <p>Post a project, receive bids in real time, and hire the right freelancer in one click.</p>
+  <a class="btn" style="background:#fff;color:#4f46e5!important" href="/register">Get Started →</a>
+  <a class="btn ghost" style="color:#fff!important;border-color:#fff8" href="/login">Demo Login</a>
+  <div class="statrow">
+    <div><b data-count="{{ stats.projects }}">0</b><span>Projects</span></div>
+    <div><b data-count="{{ stats.freelancers }}">0</b><span>Freelancers</span></div>
+    <div><b data-count="{{ stats.bids }}">0</b><span>Bids placed</span></div>
+  </div>
+</div>
+<h2 class="section">How it works</h2>
+<div class="steps">
+  <div class="card lift reveal"><div class="icon">🗂</div><h3>1. Post</h3><p class="muted">Clients publish a project with a budget and deadline.</p></div>
+  <div class="card lift reveal"><div class="icon">💰</div><h3>2. Bid</h3><p class="muted">Freelancers send a price, timeline and proposal. The client sees it instantly.</p></div>
+  <div class="card lift reveal"><div class="icon">✅</div><h3>3. Decide</h3><p class="muted">Reject weak bids with a reason, or hire the best one.</p></div>
+  <div class="card lift reveal"><div class="icon">🏁</div><h3>4. Deliver</h3><p class="muted">Track the contract from Open to Hired to Completed.</p></div>
+</div>{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block content %}
+<div class="row"><h2>Notifications</h2>
+<form method="post" action="{{ url_for('notifications_read') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<button class="btn ghost sm">Mark all read</button></form></div>
+{% for n in rows %}
+<div class="card reveal" style="{{ '' if n.is_read else 'border-left:4px solid var(--p)' }}">
+{% if n.link %}<a href="{{ n.link }}">{{ n.message }}</a>{% else %}{{ n.message }}{% endif %}
+<div class="muted" style="font-size:.85rem">{{ n.created_at }} UTC</div></div>
+{% else %}<div class="card empty"><span class="big">🔔</span>Nothing yet.</div>{% endfor %}{% endblock %}
